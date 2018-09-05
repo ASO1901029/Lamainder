@@ -1,6 +1,3 @@
-
-
-
 //messageDataの操作
 //messageDataにテキストメッセージを追加
 function pushText(text){
