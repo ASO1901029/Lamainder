@@ -13,7 +13,6 @@ function doPost(e) {
 
   userStatusIndex = userSheetDataTrans[0].indexOf(userId); //userStatusの格納される行番号の取得
   userStatus = userSheetData[userStatusIndex][1]; //userのStatusを取得
-  messageData = [];
 
   if(type=="postback"){
     postBack(jsonObj.events[0]); //postBack用の処理。日時選択アクションとか。
