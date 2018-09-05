@@ -37,7 +37,7 @@ function postBack(e) {
 
       break;
     case "listDate":
-      //    case "editDate":
+//  case "editDate":
     case "deleteDate":
       datetime = e.postback.params.date;
       datetimeJp = getDatetimeJp(datetime);
@@ -94,7 +94,6 @@ function selectMode() {
       setUserStatus("add2");
       selectTimeText = "なるほど、次は予定の時間を選んでおくれよ。";
       pushQRSelectTime("planDate");
-      //日時選択アクションから入力されてるか判定(type == "postback")してadd2に設定させずもう一度表示とかしてもいいかも）
       break;
 
     case "add2":
@@ -104,7 +103,7 @@ function selectMode() {
         pushText("予定の時間は " + datetimeJp + " か。いいじゃないか。");
         selectTimeText = "では次は、通知したい時間を選んでくれるかい？";
         pushQRSelectTimeRemind("remindDate"); //pushQRSelectTimeと比較すると、予定の1時間前に通知とかが選べる
-      } else {
+      } else { //手打ちで返信された場合。
         selectTimeText = "やり直しだ、すまないが予定の時間を選んでくれ。";
         pushQRSelectTime("planDate");
       }
