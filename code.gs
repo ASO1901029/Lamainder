@@ -6,7 +6,7 @@ function doPost(e) {
   type = jsonObj.events[0].type;
   userIdIndex = remindSheetDataTrans[0].lastIndexOf(userId); //userIdが格納される行の取得 取得できない場合は-1
 
-  if(type == "follow" || userIdIndex == 1){ //新しくフォローされた場合か、userIdが登録されていない場合
+  if(type == "follow" || userIdIndex == -1){ //新しくフォローされた場合か、userIdが登録されていない場合
     newFrends();
     return;
   }
