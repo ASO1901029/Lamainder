@@ -1,26 +1,26 @@
 
-function doPost(e) {  
+function doPost(e) {
   jsonObj = JSON.parse(e.postData.contents); //POSTをJsonで受け取り
   replyToken = jsonObj.events[0].replyToken; //リプライトークンの取り出し
   userId = jsonObj.events[0].source.userId; //userIdの取り出し
-  type = jsonObj.events[0].type; 
-  
-  if(type == "follow"){
+  type = jsonObj.events[0].type;
+  userIdIndex = remindSheetDataTrans[0].lastIndexOf(userId); //userIdが格納される行の取得 取得できない場合は-1
+
+  if(type == "follow" || userIdIndex == 1){ //新しくフォローされた場合か、userIdが登録されていない場合
     newFrends();
     return;
   }
-  
-  messageData = [];
-  userStatusIndex = userSheetDataTrans[0].indexOf(userId);
+
+  userStatusIndex = userSheetDataTrans[0].indexOf(userId); //userStatusの格納される行番号の取得
   userStatus = userSheetData[userStatusIndex][1]; //userのStatusを取得
-  userIdIndex = remindSheetDataTrans[0].lastIndexOf(userId);
-  
+  messageData = [];
+
   if(type=="postback"){
     postBack(jsonObj.events[0]); //postBack用の処理。日時選択アクションとか。
   }else{
     selectMode(); //挙動選択
   }
-  
+
   if(!messageData[0]){//何もメッセージが入ってない時 ←つまりエラー時。
     pushText("やぁ、元気かい？");
     setUserStatus("start");
@@ -36,7 +36,7 @@ function postBack(e){
     case "remindDate":
       datetime = e.postback.params.datetime;
       datetimeJp = getDatetimeJp(datetime);
-      
+
       break;
     case "listDate":
       //    case "editDate":
@@ -48,7 +48,7 @@ function postBack(e){
       datetime = new Date(remindSheetData[userIdIndex][1]);
       var dt = datetime;
       dt.setHours(dt.getHours()-1);
-      datetimeJp = dt.getMonth()+1+"月"+dt.getDate()+"日 "+dt.getHours()+"時"+dt.getMinutes()+"分";      
+      datetimeJp = dt.getMonth()+1+"月"+dt.getDate()+"日 "+dt.getHours()+"時"+dt.getMinutes()+"分";
       break;
   }
   selectMode();
@@ -66,25 +66,25 @@ function selectMode(){
           pushText("予定の内容を聞かせてくれるかい？");
           setUserStatus("add1");
           break;
-          
+
           //        case "予定の編集":
           //          selectTimeText = "いつの予定を編集するのだ？";
           //          pushQRSelectDate("editDate");
           //          setUserStatus("edit1");
           //          break;
-          
+
         case "予定一覧":
           selectTimeText = "わかった、では予定を見たい日付を選んでくれ。";
           pushQRSelectDate("listDate");
           setUserStatus("list1");
           break;
-          
+
         case "予定の削除":
           selectTimeText = "ふむ、いつの予定を削除したいんだい？";
           pushQRSelectDate("deleteDate");
           setUserStatus("delete1");
           break;
-          
+
         default:
           pushText("やぁ、どうも。");
           pushQRMenu();
@@ -98,7 +98,7 @@ function selectMode(){
       pushQRSelectTime("planDate");
       //日時選択アクションから入力されてるか判定(type == "postback")してadd2に設定させずもう一度表示とかしてもいいかも）
       break;
-      
+
     case "add2":
       if(type == "postback"){
         addContents2();
@@ -111,7 +111,7 @@ function selectMode(){
         pushQRSelectTime("planDate");
       }
       break;
-      
+
     case "add3":
       if(type == "postback"){
         addContents3();
@@ -123,7 +123,7 @@ function selectMode(){
         pushQRSelectTime("remindDate");
       }
       break;
-      
+
     case "list1":
       if(type == "postback"){
         pushText(datetimeJp+"\n君の予定を最大10件まで表示するよ。");
@@ -134,18 +134,18 @@ function selectMode(){
         pushQRSelectDate("listDate");
       }
       break;
-      
+
       //    case "edit1":
       //      pushText(datetimeJp+"以降の予定を最大10件表示します");
       //      edit1();
       //      setUserStatus("edit2");
       //      pushText("予定の番号を入力してください。");
       //      break;
-      //      
+      //
       //    case "edit2":
       //      edit2(message);
       //      break;
-      
+
     case "delete1":
       if(type=="postback"){
         pushText(datetimeJp+"\n君が登録した予定を最大10件まで表示するよ。");
@@ -157,10 +157,10 @@ function selectMode(){
         pushQRSelectDate("deleteDate");
       }
       break;
-      
+
     case "delete2":
       delete2(message);
-      break; 
+      break;
   }
 }
 
@@ -171,7 +171,7 @@ function pushText(text){
     "type":"text",
     "text":text,
   };
-  messageData.push(message);  
+  messageData.push(message);
 }
 
 function pushQRMenu(){
@@ -234,7 +234,7 @@ function pushQRSelectTime(data){
             //            "min":"2018-09-24t23:59",   //設定できる最小を設定したかったけどうまく動かず。line側のバグ？
           }
         }
-      ]      
+      ]
     }
   });
 }
@@ -264,7 +264,7 @@ function pushQRSelectTimeRemind(data){
             "displayText":"予定の1時間前",
           }
         }
-      ]      
+      ]
     }
   });
 }
@@ -284,7 +284,7 @@ function pushQRSelectDate(data){
             "mode":"date",
           }
         }
-      ]      
+      ]
     }
   });
 }
@@ -293,8 +293,8 @@ function pushQRSelectDate(data){
 //userStatusの更新
 function setUserStatus(text){
   userStatus = text;
-  userSheet.getRange(userStatusIndex+1,2).setValue(text); 
-  
+  userSheet.getRange(userStatusIndex+1,2).setValue(text);
+
 }
 
 function addContents1(){ //userIdと内容の追加
@@ -310,7 +310,7 @@ function addContents2(){ //予定日時の追加
 function addContents3(){//通知日時の設定
   remindSheet.getRange(userIdIndex+1,3).setValue(datetime);
   setTrigger(datetime);
-  
+
 }
 
 function list1(){
@@ -337,11 +337,11 @@ function delete2(no){
   var searchSheetData = searchSheet.getSheetValues(1, 1, 10, 5);
   var searchSheetDataTrans = _.zip.apply(_,searchSheetData);
   var noIndex = searchSheetData[no-1][4];
-  
+
   remindSheet.getRange(noIndex,1,1,4).clear();
   pushText("、、、よし。綺麗さっぱりに忘れたよ！");
   setUserStatus("start");
-  
+
 }
 
 function selectPlan(no){ //選択用。
@@ -363,8 +363,8 @@ function searchPlan(){ //予定の日時で、datetimeに近い順に10件まで
   var count = 0;
   var text = "";
   var searchArr = [];
-  
-  sortArr.some(function (row){ 
+
+  sortArr.some(function (row){
     if(row[1] >= datetime && row[0] == userId){
       var datetimeJp = getDatetimeJp(row[1]);
       count++;
@@ -384,7 +384,7 @@ function searchPlan(){ //予定の日時で、datetimeに近い順に10件まで
   var searchSheet = spreadsheet.getSheetByName("search");//検索結果保存用
   searchSheet.clear();
   searchSheet.getRange(1,1,searchArr.length,searchArr[0].length).setValues(searchArr);
-  
+
 }
 
 function newFrends(){
@@ -446,7 +446,7 @@ function post_reply(){
     "headers" : headers,
     "payload" : JSON.stringify(postData)
   };
-  UrlFetchApp.fetch(url, options);    
+  UrlFetchApp.fetch(url, options);
 }
 
 
@@ -459,14 +459,14 @@ function setTrigger(elements) { //登録した瞬間に呼び出す　引数はd
 
 function doRemind() {
   var now = new Date();
-  
+
   //  deleteTrigger(now);　日時分指定なので消さなくても問題はない（増えすぎるとバグりそうだけど）
   messageData = [];
   var headers2;
   var postData2;
   var options2;
-  
-  
+
+
   now.setSeconds(0);
   now.setMilliseconds(0);
   var nY = now.getYear();
@@ -475,14 +475,14 @@ function doRemind() {
   var nM = now.getMinutes();
   for(var i=0;i<remindLastRow;i++){
     var remindDatetime = new Date(remindSheetData[i][2]);
-    
+
     var rY = remindDatetime.getYear();
     var rD = remindDatetime.getDate();
     var rH = remindDatetime.getHours();
     var rM = remindDatetime.getMinutes();
-    
+
     Logger.log(nH+":"+rH+","+nM+":"+rM);
-    
+
     if(nY == rY && nD == rD && nH == rH && nM == rM){
       Logger.log("success!!:469");
       //remindsheet[i][0]をuserIdに代入
@@ -490,23 +490,23 @@ function doRemind() {
       //textはremindsheet[i][1],remindsheet[i][3]を表示させる　例）8月25日　「ハッカソン」の予定です
       var planDate = new Date(remindSheetData[i][1]);
       var text = (+planDate.getMonth()+1) + "月" + planDate.getDate() + "日 " + planDate.getHours() +"時"+ planDate.getMinutes()+"分\n「" + remindSheetData[i][3] + "」の予定があるぞ！";
-      
+
       pushText(text);
-      
+
       to = userId;
-      
-      headers2 = { 
+
+      headers2 = {
         "Content-Type" : "application/json; charset=UTF-8",
         'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
       };
-      
-      postData2 = { 
+
+      postData2 = {
         "to" : userId,
-        "messages" : 
+        "messages" :
         messageData
-        
+
       };
-      options2 = { 
+      options2 = {
         "method" : "post",
         "headers" : headers2,
         "payload" : JSON.stringify(postData2)
@@ -521,14 +521,13 @@ function doRemind() {
 
 // その日のトリガーを削除する関数(消さないと残る)
 function deleteTrigger(now) {
-  
+
   var triggers = ScriptApp.getProjectTriggers();
   for(var i=0; i < triggers.length; i++) {
     var triggerCLOCK = triggers[i];
-    
+
     if (triggers[i].getHandlerFunction() == "doRemind" ){
       ScriptApp.deleteTrigger(triggers[i]);
     }
   }
 }
-
