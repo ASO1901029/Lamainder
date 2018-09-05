@@ -1,5 +1,4 @@
 var _ = Underscore.load();
-var CHANNEL_ACCESS_TOKEN = 'dgDrEBaqM0cmwld6UAZ1eARTNcKQ5MhPdT35pfzL82SXAlmBR2ODo+cTOWAOUWiTnK3Doe0EKIEVFAsMWnKhbCEY6Cdzqnxb/1+oo/2dO83kYZzLqE2vT4ThsUE+zf+mrWmxjozaLxAza0SzSkErTgdB04t89/1O/w1cDnyilFU=';
 var url = 'https://api.line.me/v2/bot/message/reply';
 
 var spreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1AaOUSwANgpWZGVuQFpJoOKgby8BJuTy_vL05xFuvbCE/edit';//スプレッドシートURL
