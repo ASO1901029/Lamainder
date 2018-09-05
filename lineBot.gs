@@ -128,7 +128,7 @@ function pushQRSelectDate(data){
 function setUserStatus(text){
   userStatus = text;
   userSheet.getRange(userStatusIndex+1,2).setValue(text);
-  
+
 }
 
 function addContents1(){ //userIdと内容の追加
@@ -144,7 +144,7 @@ function addContents2(){ //予定日時の追加
 function addContents3(){//通知日時の設定
   remindSheet.getRange(userIdIndex+1,3).setValue(datetime);
   setTrigger(datetime);
-  
+
 }
 
 function list1(){
@@ -171,11 +171,11 @@ function delete2(no){
   var searchSheetData = searchSheet.getSheetValues(1, 1, 10, 5);
   var searchSheetDataTrans = _.zip.apply(_,searchSheetData);
   var noIndex = searchSheetData[no-1][4];
-  
+
   remindSheet.getRange(noIndex,1,1,4).clear();
   pushText("、、、よし。綺麗さっぱりに忘れたよ！");
   setUserStatus("start");
-  
+
 }
 
 function selectPlan(no){ //選択用。
@@ -197,7 +197,7 @@ function searchPlan(){ //予定の日時で、datetimeに近い順に10件まで
   var count = 0;
   var text = "";
   var searchArr = [];
-  
+
   sortArr.some(function (row){
     if(row[1] >= datetime && row[0] == userId){
       var datetimeJp = getDatetimeJp(row[1]);
@@ -218,7 +218,7 @@ function searchPlan(){ //予定の日時で、datetimeに近い順に10件まで
   var searchSheet = spreadsheet.getSheetByName("search");//検索結果保存用
   searchSheet.clear();
   searchSheet.getRange(1,1,searchArr.length,searchArr[0].length).setValues(searchArr);
-  
+
 }
 
 function newFrends(){
@@ -293,14 +293,13 @@ function setTrigger(elements) { //登録した瞬間に呼び出す　引数はd
 
 function doRemind() {
   var now = new Date();
-  
+
   //  deleteTrigger(now);　日時分指定なので消さなくても問題はない（増えすぎるとバグりそうだけど）
   messageData = [];
   var headers2;
   var postData2;
   var options2;
-  
-  
+
   now.setSeconds(0);
   now.setMilliseconds(0);
   var nY = now.getYear();
@@ -309,14 +308,14 @@ function doRemind() {
   var nM = now.getMinutes();
   for(var i=0;i<remindLastRow;i++){
     var remindDatetime = new Date(remindSheetData[i][2]);
-    
+
     var rY = remindDatetime.getYear();
     var rD = remindDatetime.getDate();
     var rH = remindDatetime.getHours();
     var rM = remindDatetime.getMinutes();
-    
+
     Logger.log(nH+":"+rH+","+nM+":"+rM);
-    
+
     if(nY == rY && nD == rD && nH == rH && nM == rM){
       Logger.log("success!!:469");
       //remindsheet[i][0]をuserIdに代入
@@ -324,21 +323,21 @@ function doRemind() {
       //textはremindsheet[i][1],remindsheet[i][3]を表示させる　例）8月25日　「ハッカソン」の予定です
       var planDate = new Date(remindSheetData[i][1]);
       var text = (+planDate.getMonth()+1) + "月" + planDate.getDate() + "日 " + planDate.getHours() +"時"+ planDate.getMinutes()+"分\n「" + remindSheetData[i][3] + "」の予定があるぞ！";
-      
+
       pushText(text);
-      
+
       to = userId;
-      
+
       headers2 = {
         "Content-Type" : "application/json; charset=UTF-8",
         'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
       };
-      
+
       postData2 = {
         "to" : userId,
         "messages" :
         messageData
-        
+
       };
       options2 = {
         "method" : "post",
@@ -355,11 +354,11 @@ function doRemind() {
 
 // その日のトリガーを削除する関数(消さないと残る)
 function deleteTrigger(now) {
-  
+
   var triggers = ScriptApp.getProjectTriggers();
   for(var i=0; i < triggers.length; i++) {
     var triggerCLOCK = triggers[i];
-    
+
     if (triggers[i].getHandlerFunction() == "doRemind" ){
       ScriptApp.deleteTrigger(triggers[i]);
     }
