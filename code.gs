@@ -84,7 +84,7 @@ function selectMode() {
           break;
 
         default:
-          pushText("やぁ、どうも。");
+          pushText("やぁ、どうも。何のようかな？");
           pushQRMenu();
           break;
       }
