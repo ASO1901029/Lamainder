@@ -1,6 +1,4 @@
 var CHANNEL_ACCESS_TOKEN = 'dgDrEBaqM0cmwld6UAZ1eARTNcKQ5MhPdT35pfzL82SXAlmBR2ODo+cTOWAOUWiTnK3Doe0EKIEVFAsMWnKhbCEY6Cdzqnxb/1+oo/2dO83kYZzLqE2vT4ThsUE+zf+mrWmxjozaLxAza0SzSkErTgdB04t89/1O/w1cDnyilFU=';
-<<<<<<< HEAD
-=======
 var spreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1AaOUSwANgpWZGVuQFpJoOKgby8BJuTy_vL05xFuvbCE/edit';//スプレッドシートURL
 
 var spreadsheet = SpreadsheetApp.openByUrl(spreadSheetUrl);//スプレッドシートを開く
@@ -13,4 +11,3 @@ var userSheet = spreadsheet.getSheetByName("user");//開いたスプレッドシ
 var userLastRow = userSheet.getLastRow();
 var userSheetData = userSheet.getSheetValues(1, 1, userLastRow, 2);
 var userSheetDataTrans = _.zip.apply(_,userSheetData);
->>>>>>> e2b00f662ad586ab3a12bd3d1aa6e4d8dafca0f4
