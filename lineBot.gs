@@ -8,6 +8,8 @@ function pushText(text){
   messageData.push(message);
 }
 
+
+//QR（クイックリプライ）関連はもうちょっと効率化できそう。messageData["quickReply"]["items"].pushみたいな感じで追加していくとか
 function pushQRMenu(){
   messageData.push({
     "type":"text",
